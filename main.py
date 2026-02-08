@@ -1,10 +1,26 @@
 from leer_excel import leer_excel_ruta
 from utils import contaminante_valido, obtener_unidad, normalizar_contaminante
 from promedios import calcular_promedios
-from exportar_excel import guardar_resultados
+from exportar import exportar_excel
+from clasificacion_ica import clasificar_ica
+from ICA import (calcular_ICA_CO, calcular_ICA_O3, calcular_ICA_NO2, calcular_ICA_SO2, calcular_ICA_PM10)
+
+
+funciones_ica = {
+    "CO": calcular_ICA_CO,
+    "O3": calcular_ICA_O3,
+    "NO2": calcular_ICA_NO2,
+    "SO2": calcular_ICA_SO2,
+    "PM10": calcular_ICA_PM10
+}
+
+def calcular_ica_fila(fila):
+    contaminante = fila["Contaminante"]
+    promedio = fila["Promedio"]
+    return funciones_ica[contaminante](promedio)
 
 def main():
-    ruta = "datos_calidad_aire.xlsx"
+    ruta = "datos/datos_calidad_aire.xlsx"
 
     df = leer_excel_ruta(ruta)
 
@@ -25,21 +41,19 @@ def main():
     print(df["Contaminante"].unique())
 
     df_prom = calcular_promedios(df)
+    df_prom["ICA"] = df_prom.apply(calcular_ica_fila, axis=1)
+
 
     print("\nPromedios NOM-172:")
     print(df_prom.head(10))
 
-        # Ruta del Excel de salida
-    ruta_salida = "resultados_ICA.xlsx"
 
-    guardar_resultados(
-        df_crudos=df,
-        df_promedios=df_prom,
-        ruta_salida=ruta_salida
-    )
 
-    print("\nArchivo Excel generado:", ruta_salida)
+    df_prom["ICA"] = df_prom.apply(calcular_ica_fila, axis=1)
+    df_prom["Categoria"] = df_prom["ICA"].apply(clasificar_ica)
 
+   
+    exportar_excel(df_prom, "datos/salida_ICA_TOTAL.xlsx")
 
 
 

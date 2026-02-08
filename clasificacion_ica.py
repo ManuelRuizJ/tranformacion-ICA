@@ -1,18 +1,14 @@
-def calcular_ICA_CO(valor_ppm):
-    tramos = [
-        (0.0, 4.4, 0, 50),
-        (4.5, 9.4, 51, 100),
-        (9.5, 12.4, 101, 150),
-        (12.5, 15.4, 151, 200),
-        (15.5, 30.4, 201, 300)
-    ]
-
-    for c_low, c_high, i_low, i_high in tramos:
-        if c_low <= valor_ppm <= c_high:
-            ica = ((i_high - i_low) / (c_high - c_low)) * (valor_ppm - c_low) + i_low
-            return round(ica, 0)
-    return None
-
+def clasificar_ica(valor):
+    if valor <= 50:
+        return "Buena"
+    elif valor <= 100:
+        return "Regular"
+    elif valor <= 150:
+        return "Mala"
+    elif valor <= 200:
+        return "Muy mala"
+    else:
+        return "Extremadamente mala"
 
 
 def calcular_ICA_CO(co):
