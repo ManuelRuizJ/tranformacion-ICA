@@ -3,28 +3,31 @@ import pandas as pd
 VALORES_INVALIDOS = ['---', '-9999', None]
 
 def leer_excel_ruta(ruta_excel):
-    df = pd.read_excel(ruta_excel, header=0)
+    df = pd.read_excel(ruta_excel, header=[0, 1, 2])
 
-    df.columns = [str(c).strip() for c in df.columns]
+    # localizar columna fecha
+    col_fecha = None
+    for col in df.columns:
+        if col[0] == "Fecha & Hora":
+            col_fecha = col
+            break
+
+    if col_fecha is None:
+        raise ValueError("No se encontró la columna 'Fecha & Hora'")
 
     filas = []
 
     for col in df.columns:
-        if col in ["Fecha & Hora", "Fecha", "Hora"]:
-            continue
-        if "Status" in col:
-            continue
+        estacion, contaminante, unidad = col
 
-        partes = col.split()
-        if len(partes) < 2:
+        if estacion == "Fecha & Hora":
             continue
-
-        estacion = partes[0]
-        contaminante = partes[1]
+        if contaminante == "Status":
+            continue
 
         for _, row in df.iterrows():
-            fecha = row["Fecha & Hora"]
             valor = row[col]
+            fecha = row[col_fecha]
 
             if valor in VALORES_INVALIDOS:
                 continue
@@ -35,9 +38,10 @@ def leer_excel_ruta(ruta_excel):
 
             filas.append({
                 "FechaHora": fecha,
-                "Estacion": estacion,
-                "Contaminante": contaminante,
+                "Estacion": estacion.strip(),
+                "Contaminante": contaminante.strip().upper(),
+                "Unidad": unidad.strip(),
                 "Valor": valor
             })
 
-        return pd.DataFrame(filas)
+    return pd.DataFrame(filas)
