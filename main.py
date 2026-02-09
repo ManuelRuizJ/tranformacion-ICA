@@ -1,9 +1,19 @@
 from leer_excel import leer_excel_ruta
-from utils import contaminante_valido, obtener_unidad, normalizar_contaminante
+from utils import (
+    contaminante_valido,
+    obtener_unidad,
+    normalizar_contaminante
+)
 from promedios import calcular_promedios
 from exportar import exportar_excel
 from clasificacion_ica import clasificar_ica
-from ICA import (calcular_ICA_CO, calcular_ICA_O3, calcular_ICA_NO2, calcular_ICA_SO2, calcular_ICA_PM10)
+from ICA import (
+    calcular_ICA_CO,
+    calcular_ICA_O3,
+    calcular_ICA_NO2,
+    calcular_ICA_SO2,
+    calcular_ICA_PM10
+)
 
 
 funciones_ica = {
